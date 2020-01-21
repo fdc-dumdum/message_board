@@ -27,7 +27,7 @@
                 'offset' => 0
             ));
 
-            if(!empty($this->data)) {
+            // if(!empty($this->data)) {
                 $this->Message->set(array(
                     'to_id' => 2,
                     'from_id' => $this->Auth->user('id'),
@@ -35,22 +35,36 @@
                     'modified_ip' => $clientIp
                 ));
 
-                if($this->Message->save($this->data)) {
-                    if($this->RequestHandler->isAjax()){
-                        $this->render('success', 'ajax');
-                    }
-                    else{
-                        // $this->redirect('send')->set('messages', $messages);
-                        // $this->Session->setFlash('Message sent.');
-                    }
+                if($this->request->is('ajax')){
+                    // $this->autoRender = false;
+                    echo $this->request->data['id'];
+                    exit();
                 }
-                else {
-                    $this->Session->setFlash('Sending message failed');
-                }
-            }
-            else{
-                $this->set('messages', $messages);
-            }
+
+                // if($this->request->isPost()){
+                    
+                //     echo $this->request->data['id'];
+                //     // if($this->Message->save($this->data)) {
+                //     //     $this->render('success', 'ajax');
+                //     // }
+                // }
+                
+                // if($this->RequestHandler->isAjax()){
+                //     if($this->Message->save($this->data)) {
+                //         $this->render('success', 'ajax');
+                //     }
+                //     else {
+                //         $this->Session->setFlash('Sending message failed');
+                //     }
+                // }
+                // else{
+                //     // $this->redirect('send')->set('messages', $messages);
+                //     // $this->Session->setFlash('Message sent.');
+                // }
+            // }
+            // else{
+            //     $this->set('messages', $messages);
+            // }
         }
 
         public function new(){

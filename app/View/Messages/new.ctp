@@ -2,7 +2,7 @@
     echo $this->Html->script(array(
         'jquery', 
         'new',
-        'select2.min.js'), FALSE);
+        'select2.min'), FALSE);
     // echo $this->Html->script('validation', FALSE); 
 ?>
 <div id="success"></div>

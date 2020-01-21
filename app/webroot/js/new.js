@@ -8,13 +8,12 @@ $(document).ready(function(event){
 
         $.ajax({
             type: "POST",
-            url: '/app/Controller/MessagesController/',
+            url: '../messages/send',
             cache: false,
             data: {
-                id: id,
-                message: message
+                'id': id,
+                'message': message
             },
-            dataType: 'json',
             success: function(result) {
                 console.log(result);
                 // window.open('/app/webroot/reviews/add/'+id,'_self');
