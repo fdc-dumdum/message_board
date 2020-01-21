@@ -1,5 +1,27 @@
 $(document).ready(function(event){
-    $('#users').change(function(){
-        alert();
+    $('.js-example-basic-multiple').select2();
+    $('#send-btn').on('click', function(e){
+        e.preventDefault();
+
+        var id = $('#users').val();
+        var message = $("#message").val();
+
+        $.ajax({
+            type: "POST",
+            url: '/app/Controller/MessagesController/',
+            cache: false,
+            data: {
+                id: id,
+                message: message
+            },
+            dataType: 'json',
+            success: function(result) {
+                console.log(result);
+                // window.open('/app/webroot/reviews/add/'+id,'_self');
+            },      
+            error: function (response, desc, exception) {
+                alert(exception);
+            }
+        });
     })
 })

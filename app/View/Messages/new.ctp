@@ -1,26 +1,29 @@
 <?php 
-    echo $this->Html->script('jquery', FALSE);
-    echo $this->Html->script('validation', FALSE); 
-    echo $this->Html->script('new', FALSE); 
+    echo $this->Html->script(array(
+        'jquery', 
+        'new',
+        'select2.min.js'), FALSE);
+    // echo $this->Html->script('validation', FALSE); 
 ?>
 <div id="success"></div>
 <h2>New Message</h2>
 
-<select class="js-example-basic-multiple" style="width: 200px" id="users">
-    <?php
+<?php
+    echo $this->Form->create('Message');
+    echo '<select class="js-example-basic-multiple" style="width: 200px" name="users">';
+
         foreach($users as $user) :
             echo '<option value="'.$user['User']['id'].'">'.$user['User']['name'].'</option>';
         endforeach;
-    ?>
-</select>
-<?php
-    echo $this->Form->create();
-    echo $this->Form->input('content', array('id' => 'content'));
-    echo $this->Js->submit('Send', array(
-        'before' => $this->Js->get('#sending')->effect('fadeIn'),
-        'success' => $this->Js->get('#sending')->effect('fadeOut'),
-        'update' => '#success',
-        'url' => 'send'
+        
+    echo '</select>';
+    echo $this->Form->input('content', array('name' => 'message'));
+    echo $this->Form->button('Send', array(
+        // 'before' => $this->Js->get('#sending')->effect('fadeIn'),
+        // 'success' => $this->Js->get('#sending')->effect('fadeOut'),
+        // 'update' => '#success',
+        // 'url' => 'send',
+        'id' => 'send-btn'
     ));
     echo $this->Form->end();
 ?>

@@ -35,8 +35,11 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			'card.css',
 			'select2.min.css'
 		));
-		echo $this->Html->script('select2.min.js', FALSE);
-		echo $scripts_for_layout;
+
+		// jQuery
+		echo $this->Html->script(array(
+			'jquery'
+		), FALSE);
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
@@ -91,11 +94,5 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			</p>
 		</div>
 	</div>
-
-	<script>
-		$(document).ready(function() {
-			$('.js-example-basic-multiple').select2();
-		});
-	</script>
 </body>
 </html>

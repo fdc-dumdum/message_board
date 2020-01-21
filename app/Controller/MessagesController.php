@@ -35,13 +35,6 @@
                     'modified_ip' => $clientIp
                 ));
 
-                echo '<pre>';
-                print_r($this->request->data);
-                echo '</pre>';
-
-                return;
-                echo '<pre>';
-
                 if($this->Message->save($this->data)) {
                     if($this->RequestHandler->isAjax()){
                         $this->render('success', 'ajax');
