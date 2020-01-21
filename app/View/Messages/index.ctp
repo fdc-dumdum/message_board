@@ -1,5 +1,10 @@
-<?php echo $this->Html->script('jquery', FALSE); ?>
-<h2>People you can contact</h2>
+<?php 
+    echo $this->Html->script(array(
+            'jquery',
+            'message_index'
+        ), FALSE); 
+?>
+<h2>Message List</h2>
 <?php
 
     echo $this->Html->link($this->Form->button('New Message'), array(
@@ -7,21 +12,28 @@
     ), array(
         'escape'=>false
     ));
-    foreach($users as $user) :
+
+    if(count($users) > 0){
+        foreach($users as $user) :
+            echo $this->Form->create('Message');
+            echo '<div class="container" id="test">';
+            echo $this->Html->image('unknown.jpeg', array('alt' => $user['users']['name'], 'border' => '0'));
+            echo $this->Html->link($user['users']['name'], array(
+                'controller' => 'messages',
+                'action' => 'conversation', $user['users']['id']
+            ));
+            echo '<br><br>';
+            echo $this->Form->button('Delete', array(
+                'value' => $user['users']['id'],
+                'class' => array('delete')
+            ));
+            echo '</div>';
+        endforeach;
+    }
+    else{
         echo '
-            <div class="container">
-                '.$this->Html->image('unknown.jpeg', array('alt' => $user['User']['name'], 'border' => '0')).'
-                '.$this->Form->postLink($user['User']['name'], array(
-                    'action' => 'send', $user['User']['id']
-                )).'
-                <br>
-                <br>
-                '.$this->Form->postLink('Delete', array(
-                    'value' => $user['User']['id'],
-                    'class' => 'delete'
-                )).'
-            </div>
+            <div class="container">You have no connections with people yet</div>
         ';
-    endforeach;
+    }
 
 ?>

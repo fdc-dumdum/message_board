@@ -5,9 +5,48 @@
     class MessagesController extends AppController {
 
         public function index() {
-            $user = new User();
-            $users = $user->find('all');
-            $this->set('users', $users);
+            $people = $this->Message->query("SELECT users.id, users.name 
+            FROM users, messages 
+            WHERE to_id=users.id AND (from_id='".$this->Auth->user('id')."' OR to_id='".$this->Auth->user('id')."')
+            GROUP BY to_id
+            ORDER BY messages.created DESC");
+
+            $this->set('users', $people);
+        }
+
+        public function delete() {
+            if($this->request->is('ajax')){
+                $response = $this->Message->deleteAll(array('Message.to_id' => $this->request->data['id']));
+                
+                if($response){
+                    echo 'Deleted';
+                }
+                else{
+                    echo 'Something went wrong';
+                }
+                exit();
+            }
+        }
+
+        public function conversation($id) {
+            $messages = $this->Message->find('all', array(
+                'OR' => array(
+                    'Message.from_id' => $this->Auth->user('id'),
+                    'Message.to_id' => $this->Auth->user('id')
+                ),
+                'order' => array(
+                    'created' => 'desc'
+                ),
+                'group' => 'Message.from_id',
+                'limit' => 5,
+                'offset' => 0
+            ));
+
+            // echo '<pre>';
+            // print_r($messages);
+            // echo '</pre>';
+
+            $this->set('messages', $messages);
         }
 
         public function send() {
@@ -15,29 +54,42 @@
             $this->request->trustProxy = true;
             $clientIp = $this->request-> clientIp();
 
-            $messages = $this->Message->find('all', array(
-                'OR' => array(
-                    'Message.from_id' => $this->Auth->user('id'),
-                    'Message.to_id' => 1
-                ),
-                'order' => array(
-                    'created' => 'asc'
-                ),
-                'limit' => 10,
-                'offset' => 0
-            ));
+            // $messages = $this->Message->find('all', array(
+            //     'OR' => array(
+            //         'Message.from_id' => $this->Auth->user('id'),
+            //         'Message.to_id' => 1
+            //     ),
+            //     'order' => array(
+            //         'created' => 'asc'
+            //     ),
+            //     'limit' => 10,
+            //     'offset' => 0
+            // ));
 
             // if(!empty($this->data)) {
-                $this->Message->set(array(
-                    'to_id' => 2,
-                    'from_id' => $this->Auth->user('id'),
-                    'created_ip' => $clientIp,
-                    'modified_ip' => $clientIp
-                ));
+                // $this->Message->set(array(
+                //     'to_id' => 2,
+                //     'from_id' => $this->Auth->user('id'),
+                //     'created_ip' => $clientIp,
+                //     'modified_ip' => $clientIp
+                // ));
 
                 if($this->request->is('ajax')){
-                    // $this->autoRender = false;
-                    echo $this->request->data['id'];
+                    $this->request->data['Message']['to_id'] = $this->request->data['id'];
+                    $this->request->data['Message']['from_id'] = $this->Auth->user('id');
+                    $this->request->data['Message']['content'] = $this->request->data['message'];
+                    $this->request->data['Message']['created_ip'] = $this->request->data['Message']['modified_ip'] = $this->request-> clientIp();
+
+                    $this->Message->set($this->request->data);
+
+                    $response = $this->Message->save();
+
+                    if($response){
+                        echo 'Message sent';
+                    }
+                    else{
+                        echo 'Something went wrong';
+                    }
                     exit();
                 }
 
@@ -78,9 +130,6 @@
                 )
             ));
             $this->set('users', $users);
-            // echo '<pre>';
-            // print_r($users);
-            // echo '</pre>';
         }
 
     }

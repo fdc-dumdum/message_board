@@ -1,3 +1,18 @@
+<?php 
+    echo $this->Html->script(array(
+        'jquery',
+        'jquery-ui-1.12.1' => array(
+            'jquery-ui.min'
+        ),
+        'editProfile'
+    ), FALSE); 
+
+    echo $this->Html->css(array(
+        'jquery-ui.min.css',
+        'images'
+    ));
+?>
+
 <h1>Upload File</h1>
 
 <div class="content">
@@ -12,13 +27,15 @@
                 if($detail['image'] == null){
                     echo $this->Html->image('unknown.jpeg', [
                         'height' => '300',
-                        'alt' => 'unknown'
+                        'alt' => 'unknown',
+                        'id' => 'image-viewer'
                     ]);
                 }
                 else{
                     echo $this->Html->image($detail['image'], [
                         'height' => '300',
-                        'alt' => $detail['image']
+                        'alt' => $detail['image'],
+                        'id' => 'image-viewer'
                     ]);
                 }
                 echo $this->Form->input('file', [
@@ -46,6 +63,10 @@
                 }
 
                 echo $this->Form->radio('gender', $options, $attributes);
+                echo $this->Form->input('birthdate', [
+                    'type' => 'text',
+                    'id' => 'birthdate'
+                    ]);
                 echo $this->Form->input('hubby', ['value' => $detail['hubby']]);
                 echo $this->Form->button('Save Changes', [
                     'type' => 'submit'

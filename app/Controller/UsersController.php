@@ -8,7 +8,7 @@
         public function beforeFilter() {
             $this->userIp = $this->request->clientIp();
 
-            // Access to pages even that dont require login
+            // Access to pages that dont require login
             $this->Auth->allow(array('create'));
             
             // Check if already logged in
@@ -130,6 +130,7 @@
                     $this->User->saveField('name', $this->request->data['User']['name']);
                     $this->User->saveField('email', $email);
                     $this->User->saveField('gender', $gender);
+                    $this->User->saveField('birthdate', date("Y-m-d", strtotime($this->request->data['User']['birthdate'])));
                     $this->User->saveField('hubby', $this->request->data['User']['hubby']);
 
                     $this->redirect(array('action' => 'profile', $this->Auth->user('id')));
