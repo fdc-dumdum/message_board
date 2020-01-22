@@ -1,11 +1,12 @@
 $(document).ready(function(){
+    var user_id = 1;
     $(document).on('click', '.delete', function(e){
         e.preventDefault();
         var id = $(this).attr('value');
 
         $.ajax({
             type: "POST",
-            url: '../messages/delete/',
+            url: '../../messenger/messages/delete',
             cache: false,
             data: {
                 'id': id

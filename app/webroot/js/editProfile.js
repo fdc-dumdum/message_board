@@ -14,5 +14,9 @@ $(document).ready(function(){
         }
     }
 
+    $('#shet').keypress(function(e){
+        alert();
+    })
+
     $('#birthdate').datepicker();
 })

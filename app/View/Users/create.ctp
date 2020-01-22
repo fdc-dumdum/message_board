@@ -1,6 +1,9 @@
 <h1>Create Account</h1>
 <?php
-
+    echo $this->Html->script(array(
+        'jquery', 
+        'registration'
+    ), FALSE);
     echo $this->Form->create('User');
     echo $this->Form->input('name');
     echo $this->Form->input('email');

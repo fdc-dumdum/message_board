@@ -1,8 +1,6 @@
 <?php 
     echo $this->Html->script(array(
-            'jquery',
-            'message_index'
-        ), FALSE); 
+            'jquery', 'messageIndex'), FALSE); 
 ?>
 <h2>Message List</h2>
 <?php
@@ -22,10 +20,16 @@
                 'controller' => 'messages',
                 'action' => 'conversation', $user['users']['id']
             ));
+            echo ' - ';
+            echo $this->Html->link('Profile', array(
+                'controller' => 'users',
+                'action' => 'profile', $user['users']['id']
+            ), array('target' => '_blank'));
             echo '<br><br>';
             echo $this->Form->button('Delete', array(
                 'value' => $user['users']['id'],
-                'class' => array('delete')
+                'class' => 'delete',
+                'type' => 'button'
             ));
             echo '</div>';
         endforeach;

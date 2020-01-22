@@ -1,6 +1,7 @@
 $(document).ready(function(event){
     window.counter = 1;
 
+
     $('#send-btn').on('click', function(e){
         e.preventDefault();
 
@@ -9,7 +10,7 @@ $(document).ready(function(event){
 
         $.ajax({
             type: "POST",
-            url: '../messages/send',
+            url: url,
             cache: false,
             data: {
                 'id': id,
@@ -17,7 +18,7 @@ $(document).ready(function(event){
             },
             success: function(result) {
                 alert(result);
-                window.location.href = "../messages/";
+                window.location.href = redirect;
             },      
             error: function (response, desc, exception) {
                 alert(exception);
@@ -27,18 +28,18 @@ $(document).ready(function(event){
 
     $('#show-more').on('click', function(e){
         e.preventDefault();
+        var offset = (counter - 1) * 5;
 
         $.ajax({
             type: "POST",
-            url: '<?php echo Router::connect(array("controller" => "messages", "action" = "")) ?>',
+            url: '../../messages/pagination',
             cache: false,
+            dataType: 'html',
             data: {
-                'id': id,
-                'message': message
+                'offset': offset
             },
             success: function(result) {
-                alert(result);
-                window.location.href = "../messages/";
+                console.log(result);
             },      
             error: function (response, desc, exception) {
                 alert(exception);

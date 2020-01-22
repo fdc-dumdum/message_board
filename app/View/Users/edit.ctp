@@ -43,6 +43,10 @@
                     'accept' => '.jpg, .png, .gif'
                     ]);
                 echo $this->Form->input('email', ['value' => $detail['email']]);
+                echo $this->Form->input('Enter your password to change', array(
+                    'type' => 'password',
+                    'id' => 'password'
+                ));
                 echo $this->Form->input('name', ['value' => $detail['name']]);
 
                 $options = [
@@ -63,10 +67,20 @@
                 }
 
                 echo $this->Form->radio('gender', $options, $attributes);
-                echo $this->Form->input('birthdate', [
-                    'type' => 'text',
-                    'id' => 'birthdate'
+
+                if($detail['birthdate'] == null){
+                    echo $this->Form->input('birthdate', [
+                        'type' => 'text',
+                        'id' => 'birthdate'
                     ]);
+                }
+                else{
+                    echo $this->Form->input('birthdate', [
+                        'type' => 'text',
+                        'id' => 'birthdate',
+                        'value' => $detail['birthdate']
+                    ]);
+                }
                 echo $this->Form->input('hubby', ['value' => $detail['hubby']]);
                 echo $this->Form->button('Save Changes', [
                     'type' => 'submit'

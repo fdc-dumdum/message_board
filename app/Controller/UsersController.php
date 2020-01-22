@@ -103,6 +103,11 @@
                     'User.id' => $this->Auth->user('id'),
                     'User.email !=' => $this->request->data['User']['email']
                 );
+
+                $passwordChecker = array(
+                    'User.id' => $this->Auth->user('id'),
+                    'User.password !=' => AuthComponent::password($this->request->data['User']['password'])
+                );
                     
                 if($this->User->hasAny($changeCurrentEmail)){
                     if($this->User->hasAny($this->isEmailExist)){
@@ -116,6 +121,13 @@
                 else{
                     $email = $this->Auth->user('email');
                 }
+
+                if($this->User->hasAny($passwordChecker)){
+                    $password = $this->request->data['User']['email'];
+                }
+                // else{
+                //     $password = $this->request->data['User']['email'];
+                // }
 
                 if($this->request->data['User']['gender'] == 'M'){
                     $gender = 1;
