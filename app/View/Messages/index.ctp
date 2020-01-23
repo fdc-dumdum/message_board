@@ -1,20 +1,24 @@
 <?php 
     echo $this->Html->script(array(
-            'jquery', 'messageIndex'), FALSE); 
+            'jquery', 
+            'messageIndex',
+            'readmore'
+        ), FALSE); 
 ?>
-<h2>Message List</h2>
 <?php
 
-    echo $this->Html->link($this->Form->button('New Message'), array(
+    echo $this->Html->link($this->Form->button('Compose New MEssage'), array(
         'action' => 'new'
     ), array(
         'escape'=>false
     ));
+    echo '<br><br>';
+    echo '<br><br>';
 
     if(count($users) > 0){
         foreach($users as $user) :
             echo $this->Form->create('Message');
-            echo '<div class="container" id="test">';
+            echo '<div class="container shett" id="conversations">';
             echo $this->Html->image('unknown.jpeg', array('alt' => $user['users']['name'], 'border' => '0'));
             echo $this->Html->link($user['users']['name'], array(
                 'controller' => 'messages',
@@ -25,6 +29,10 @@
                 'controller' => 'users',
                 'action' => 'profile', $user['users']['id']
             ), array('target' => '_blank'));
+            echo '<br><br>';
+            echo '<div id="readMoreReadLess">';
+            echo '<span class="slide">'.$user['messages']['content'].'</span>';
+            echo '</div>';
             echo '<br><br>';
             echo $this->Form->button('Delete', array(
                 'value' => $user['users']['id'],

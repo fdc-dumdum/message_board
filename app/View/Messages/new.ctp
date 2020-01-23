@@ -1,6 +1,7 @@
 <script>
     var url = '../messages/send';
     var redirect = '../messages/';
+    var page = 'new';
 </script>
 
 <?php 
@@ -31,57 +32,3 @@
     echo $this->Form->end();
 ?>
 <div id="sending" style="display: none; background-color: lightgreen">Sending...</div>
-<script>
-    $(document).ready(function(event){
-    window.counter = 1;
-
-    $('#send-btn').on('click', function(e){
-        e.preventDefault();
-
-        var id = $('#people').val();
-        var message = $('#message').val();
-
-        $.ajax({
-            type: "POST",
-            url: "<?php echo Router::url(array('controller' => 'messages', 'action' => 'send')); ?>",
-            cache: false,
-            data: {
-                'id': id,
-                'message': message
-            },
-            success: function(result) {
-                alert(result);
-                window.location.href = "../messages/";
-            },      
-            error: function (response, desc, exception) {
-                alert(exception);
-            }
-        });
-    })
-
-    $('#show-more').on('click', function(e){
-        e.preventDefault();
-
-        $.ajax({
-            type: "POST",
-            url: "<?php echo Router::connect(array('controller' => 'messages', 'action' => 'send')) ?>",
-            cache: false,
-            data: {
-                'id': id,
-                'message': message
-            },
-            success: function(result) {
-                alert(result);
-                window.location.href = "../messages/";
-            },      
-            error: function (response, desc, exception) {
-                alert(exception);
-            }
-        });
-        
-        counter++;
-    })
-
-    $('#people').select2();
-})
-</script>

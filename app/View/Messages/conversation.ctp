@@ -1,32 +1,38 @@
+<?php 
+    echo $this->Html->script(array(
+        'jquery',
+        'sendMessage', 
+        'select2.min'), FALSE);
+
+        if($messages[0]['messages']['from_id'] == AuthComponent::user('id')){
+            $sendTo = $messages[0]['messages']['to_id'];
+        } 
+        else{
+            $sendTo = $messages[0]['messages']['from_id'];
+        }
+?>
+
+
 <script>
     var url = '../../messages/send';
     var redirect = '../../messages/';
+    var receiverId = "  <?php echo $sendTo ?>";
+    var page = 'conversation';
 </script>
-
-<?php 
-    echo $this->Html->script(array(
-        'jquery', 'messageIndex','sendMessage', 'select2.min'), FALSE);
-?>
 <div id="success"></div>
-<h2>Message List</h2>
+<h2>Recipient: <?php echo $messages[0]['users']['name'] ?></h2>
 <?php
-    
     echo $this->Form->create('Message');
     echo $this->Form->input('content', array('id' => 'message'));
     echo $this->Form->button('Reply Message', array(
-        // 'before' => $this->Js->get('#sending')->effect('fadeIn'),
-        // 'success' => $this->Js->get('#sending')->effect('fadeOut'),
-        // 'update' => '#success',
-        // 'url' => 'send',
         'id' => 'send-btn'
     ));
-    // echo $this->Form->input('content', array('id' => 'content'));
-    // echo $this->Js->submit('Send', array(
-    //     'before' => $this->Js->get('#sending')->effect('fadeIn'),
-    //     'success' => $this->Js->get('#sending')->effect('fadeOut'),
-    //     'update' => '#success'
-    // ));
     echo $this->Form->end();
+    echo '<br><br>';
+    echo $this->Form->input(FALSE, array(
+        'id' => 'search',
+        'placeholder' => 'Search convo here...'
+    ));
     
     foreach($messages as $message) :
         if($message['messages']['from_id'] == AuthComponent::user('id')){
@@ -55,3 +61,4 @@
 <br>
 <a href="#" id="show-more">Show More</a>
 <div id="sending" style="display: none; background-color: lightgreen">Sending...</div>
+

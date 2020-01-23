@@ -5,26 +5,36 @@
     class MessagesController extends AppController {
 
         public function index() {
-            $people = $this->Message->query("SELECT users.id, users.name, content
-                FROM users, messages 
-                WHERE (((from_id!='".$this->Auth->user('id')."' AND to_id='".$this->Auth->user('id')."') AND from_id=users.id) 
-                OR ((from_id='".$this->Auth->user('id')."' AND to_id!='".$this->Auth->user('id')."') AND to_id=users.id))
-                AND (from_id='".$this->Auth->user('id')."' OR to_id='".$this->Auth->user('id')."')
-                GROUP BY users.id
-                ORDER BY MAX(messages.created) DESC
-            ");
+            $sql = "SELECT content, users.name, users.id 
+                    FROM (
+                        SELECT MAX(m1.created) AS latest, u1.id 
+                        FROM messages m1, users u1 
+                        WHERE (((from_id!='".$this->Auth->user('id')."' 
+                            AND to_id='".$this->Auth->user('id')."') 
+                            AND from_id=u1.id)
+                        OR ((from_id='".$this->Auth->user('id')."' 
+                            AND to_id!='".$this->Auth->user('id')."') 
+                            AND to_id=u1.id)) 
+                        AND (from_id='".$this->Auth->user('id')."' 
+                            OR to_id='".$this->Auth->user('id')."') 
+                        GROUP BY u1.id
+                        ) result, 
+                    messages, users 
+                    WHERE messages.created=latest AND users.id=result.id 
+                    ORDER BY latest DESC";
 
-// SELECT users.id, users.name, (SELECT content FROM messages WHERE ) FROM users, messages WHERE (((from_id!=1 AND to_id=1) AND from_id=users.id) OR ((from_id=1 AND to_id!=1 AND to_id=users.id))) AND from_id=1 GROUP BY users.id
-// ORDER BY MAX(messages.created) DESC
-
-            // debug($people);
-
-            $this->set('users', $people);
+            $this->set('users', $this->Message->query($sql));
         }
 
         public function delete() {
             if($this->request->is('ajax')){
-                $response = $this->Message->deleteAll(array('Message.to_id' => $this->request->data['id']));
+                $sql = "DELETE FROM messages 
+                        WHERE (from_id='".$this->Auth->user('id')."' 
+                        AND to_id='".$this->request->data['id']."')
+                        OR (to_id='".$this->Auth->user('id')."' 
+                        AND from_id='".$this->request->data['id']."')";
+                
+                $response = $this->Message->query($sql);
                 
                 if($response){
                     echo 'Deleted';
@@ -37,32 +47,60 @@
         }
 
         public function conversation($id) {
-            $messages = $this->Message->query("SELECT content, created, from_id 
-                FROM messages 
-                WHERE (from_id='".$this->Auth->user('id')."' AND to_id=$id) OR (from_id=$id AND to_id='".$this->Auth->user('id')."')
-                ORDER BY created DESC LIMIT 5 OFFSET 0");
+            $sql = "SELECT name, content, messages.created, from_id, to_id  
+                    FROM messages, users
+                    WHERE (from_id=".$this->Auth->user('id')." AND to_id=$id AND to_id=users.id) 
+                        OR (from_id=$id AND to_id=".$this->Auth->user('id')." AND from_id=users.id)
+                    ORDER BY messages.created DESC LIMIT 10 OFFSET 0";
+
+            $messages = $this->Message->query($sql);
             
             $this->set('messages', $messages);
         }
 
-        public function pagination(){
-            $this->autoRender = false;
+        public function more(){
             if($this->request->is('ajax')){
-                $messages = $this->Message->query("SELECT content, created, from_id 
-                FROM messages 
-                WHERE (from_id=1 AND to_id=1) OR (from_id=1 AND to_id=1)
-                ORDER BY created DESC LIMIT 5 OFFSET 0");
-            
-                debug($messages);
-                return;
+                $sql = "SELECT content, created, from_id 
+                        FROM messages 
+                        WHERE (from_id=".$this->Auth->user('id')." AND to_id=".$this->request->data['id'].") 
+                        OR (from_id=".$this->request->data['id']." AND to_id=".$this->Auth->user('id').")
+                        ORDER BY created DESC LIMIT 10 OFFSET ".$this->request->data['offset']."";
 
-                $this->layout = "ajax";
-                $this->set('messages', $messages);
+                $messages = $this->Message->query($sql);
+
+                $this->set('messages', $messages); 
+                $this->render();
+            }
+        }
+        
+        public function search(){
+            if($this->request->is('ajax')){
+                if(empty($this->request->data['keyword'])){
+                    $sql = "SELECT name, content, messages.created, from_id, to_id  
+                    FROM messages, users
+                    WHERE (from_id=".$this->Auth->user('id')." AND to_id=".$this->request->data['id']." AND to_id=users.id) 
+                        OR (from_id=".$this->request->data['id']." AND to_id=".$this->Auth->user('id')." AND from_id=users.id)
+                    ORDER BY messages.created DESC LIMIT 10 OFFSET 0";
+
+                    $messages = $this->Message->query($sql);
+                }
+                else{
+                    $sql = "SELECT content, created, from_id 
+                            FROM messages 
+                            WHERE (from_id=1 OR to_id=1)
+                            AND content LIKE '%".$this->request->data['keyword']."%'";
+                    
+                    $messages = $this->Message->query($sql);
+                }
+                
+                $this->set('messages', $messages); 
+                $this->render();
             }
         }
 
         public function send() {
             $this->request->trustProxy = true;
+
             if($this->request->is('ajax')){
                 $this->request->data['Message']['to_id'] = $this->request->data['id'];
                 $this->request->data['Message']['from_id'] = $this->Auth->user('id');

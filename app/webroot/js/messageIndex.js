@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    var user_id = 1;
     $(document).on('click', '.delete', function(e){
         e.preventDefault();
         var id = $(this).attr('value');
@@ -12,11 +11,14 @@ $(document).ready(function(){
                 'id': id
             },
             success: function(result) {
-                $('#test').fadeOut();
+                $('#conversations').fadeOut();
             },      
             error: function (response, desc, exception) {
                 alert(exception);
             }
         });
     })
+
+    $('#readMoreReadLess').readMoreReadLess();
 })
+
