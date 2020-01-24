@@ -2,24 +2,33 @@
     echo $this->Html->script(array(
             'jquery', 
             'messageIndex',
-            'readmore'
         ), FALSE); 
 ?>
-<?php
 
+<?php
     echo $this->Html->link($this->Form->button('Compose New MEssage'), array(
-        'action' => 'new'
+        'controller' => 'messages',
+        'action' => 'compose'
     ), array(
         'escape'=>false
     ));
-    echo '<br><br>';
     echo '<br><br>';
 
     if(count($users) > 0){
         foreach($users as $user) :
             echo $this->Form->create('Message');
-            echo '<div class="container shett" id="conversations">';
-            echo $this->Html->image('unknown.jpeg', array('alt' => $user['users']['name'], 'border' => '0'));
+            echo '<div class="container ">';
+            if($user['users']['image'] == null){
+                echo $this->Html->image('unknown.jpeg', array(
+                    'alt' => $user['users']['name'], 
+                ));
+            }
+            else{
+                echo $this->Html->image($user['users']['image'], array(
+                    'alt' => $user['users']['name'],
+                    'width' => 40
+                ));
+            }
             echo $this->Html->link($user['users']['name'], array(
                 'controller' => 'messages',
                 'action' => 'conversation', $user['users']['id']
@@ -29,16 +38,11 @@
                 'controller' => 'users',
                 'action' => 'profile', $user['users']['id']
             ), array('target' => '_blank'));
-            echo '<br><br>';
-            echo '<div id="readMoreReadLess">';
-            echo '<span class="slide">'.$user['messages']['content'].'</span>';
-            echo '</div>';
-            echo '<br><br>';
-            echo $this->Form->button('Delete', array(
-                'value' => $user['users']['id'],
-                'class' => 'delete',
-                'type' => 'button'
-            ));
+            echo '<br>';
+            echo '<br>';
+            echo '<span class="mtop content">'.$user['messages']['content'].'</span>';
+            echo '<br>';
+            echo '<a href="#" class="fright delete" value="'.$user['users']['id'].'">DELETE</a>';
             echo '</div>';
         endforeach;
     }
@@ -47,5 +51,4 @@
             <div class="container">You have no connections with people yet</div>
         ';
     }
-
 ?>

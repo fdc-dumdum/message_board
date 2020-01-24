@@ -1,4 +1,10 @@
 <?php
+    echo $this->Html->script(array(
+        'jquery',
+        'sendMessage'
+    ), FALSE);
+
+
     foreach($messages as $message) :
         if($message['messages']['from_id'] == AuthComponent::user('id')){
             echo '<div class="container darker">';

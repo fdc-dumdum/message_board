@@ -1,13 +1,17 @@
+
 $(document).ready(function(event){
 
     window.ctr = 1;
+
+    if(page != 'compose'){
+        fetchData(0);
+    }
 
     $('#send-btn').on('click', function(e){
         e.preventDefault();
 
         var id = $('#people').val();
         var message = $('#message').val();
-        var data;
 
         if(message == ''){
             return alert('Please leave a message');
@@ -46,29 +50,18 @@ $(document).ready(function(event){
     $('#show-more').on('click', function(e){
         e.preventDefault();
 
-        $.ajax({
-            type: "POST",
-            url: '../../messages/more',
-            cache: false,
-            data: {
-                'id': receiverId,
-                'offset': (ctr) * 10
-            },
-            success: function(html) {
-                $(html).insertAfter($('.container').last());
-            },      
-            error: function (response, desc, exception) {
-                alert(exception);
-            }
-        });
+        var offset = ctr * 10;
 
+        fetchData(offset);
         ctr++;
     })
 
     $('#search').keyup(function(e){
+        
         e.preventDefault();
 
         var keyword = $(this).val();
+        var no_data = '<div class="container">No results found</div>';
 
         $.ajax({
             type: "POST",
@@ -78,15 +71,45 @@ $(document).ready(function(event){
                 'id': receiverId,
                 'keyword': keyword
             },
-            success: function(html) {
-                $('.container').remove();
-                $(html).insertAfter($('#search'));
+            success: function(response) {
+                if(response == ""){
+                    $('.container').remove();
+                    $(no_data).insertAfter($('#search'));
+                }
+                else{
+                    $('.container').remove();
+                    $(response).insertAfter($('#search'));
+                }
             },      
             error: function (response, desc, exception) {
                 alert(exception);
             }
         });
     })
+    
+    function fetchData(offset){
+        $.ajax({
+            type: "POST",
+            url: '../../messages/conversation/' + receiverId,
+            cache: false,
+            data: {
+                'id': receiverId,
+                'offset': offset
+            },
+            success: function(response) {
+                if(response == ""){
+                    alert('No more data to be loaded');
+                }
+                else{
+                    $('.container').length 
+                    ? $(response).insertAfter($('.container').last()) 
+                    : $(response).insertAfter($('#search'));
+                }
+            },      
+            error: function (response, desc, exception) {
+                alert(exception);
+            }
+        });
+    }
 
-    $('#people').select2();
 })

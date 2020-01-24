@@ -5,7 +5,7 @@
     class MessagesController extends AppController {
 
         public function index() {
-            $sql = "SELECT content, users.name, users.id 
+            $sql = "SELECT content, name, users.id, image 
                     FROM (
                         SELECT MAX(m1.created) AS latest, u1.id 
                         FROM messages m1, users u1 
@@ -47,48 +47,53 @@
         }
 
         public function conversation($id) {
-            $sql = "SELECT name, content, messages.created, from_id, to_id  
-                    FROM messages, users
-                    WHERE (from_id=".$this->Auth->user('id')." AND to_id=$id AND to_id=users.id) 
-                        OR (from_id=$id AND to_id=".$this->Auth->user('id')." AND from_id=users.id)
-                    ORDER BY messages.created DESC LIMIT 10 OFFSET 0";
-
-            $messages = $this->Message->query($sql);
-            
-            $this->set('messages', $messages);
-        }
-
-        public function more(){
             if($this->request->is('ajax')){
-                $sql = "SELECT content, created, from_id 
-                        FROM messages 
-                        WHERE (from_id=".$this->Auth->user('id')." AND to_id=".$this->request->data['id'].") 
-                        OR (from_id=".$this->request->data['id']." AND to_id=".$this->Auth->user('id').")
+                $sql = "SELECT content, messages.created, from_id, image, 
+                            (
+                                SELECT image 
+                                FROM users 
+                                WHERE id=".$this->Auth->user('id')."
+                            ) AS user_image
+                        FROM messages, users 
+                        WHERE (from_id=".$this->Auth->user('id')." AND to_id=".$this->request->data['id']." AND to_id=users.id) 
+                        OR (from_id=".$this->request->data['id']." AND to_id=".$this->Auth->user('id')." AND from_id=users.id)
                         ORDER BY created DESC LIMIT 10 OFFSET ".$this->request->data['offset']."";
 
                 $messages = $this->Message->query($sql);
 
                 $this->set('messages', $messages); 
-                $this->render();
+                $this->render('content');
             }
         }
         
         public function search(){
             if($this->request->is('ajax')){
                 if(empty($this->request->data['keyword'])){
-                    $sql = "SELECT name, content, messages.created, from_id, to_id  
-                    FROM messages, users
-                    WHERE (from_id=".$this->Auth->user('id')." AND to_id=".$this->request->data['id']." AND to_id=users.id) 
-                        OR (from_id=".$this->request->data['id']." AND to_id=".$this->Auth->user('id')." AND from_id=users.id)
-                    ORDER BY messages.created DESC LIMIT 10 OFFSET 0";
+                    $sql = "SELECT name, content, messages.created, from_id, to_id  , image,
+                            (
+                                SELECT image 
+                                FROM users 
+                                WHERE id=".$this->Auth->user('id')."
+                            ) AS user_image 
+                            FROM messages, users
+                            WHERE (from_id=".$this->Auth->user('id')." AND to_id=".$this->request->data['id']." AND to_id=users.id) 
+                                OR (from_id=".$this->request->data['id']." AND to_id=".$this->Auth->user('id')." AND from_id=users.id)
+                            ORDER BY messages.created DESC LIMIT 10 OFFSET 0";
 
                     $messages = $this->Message->query($sql);
                 }
                 else{
-                    $sql = "SELECT content, created, from_id 
-                            FROM messages 
-                            WHERE (from_id=1 OR to_id=1)
-                            AND content LIKE '%".$this->request->data['keyword']."%'";
+                    $sql = "SELECT name, content, messages.created, from_id, to_id, image,
+                            (
+                                SELECT image 
+                                FROM users 
+                                WHERE id=".$this->Auth->user('id')."
+                            ) AS user_image 
+                            FROM messages, users
+                            WHERE ((from_id=".$this->Auth->user('id')." AND to_id=".$this->request->data['id']." AND to_id=users.id) 
+                                OR (from_id=".$this->request->data['id']." AND to_id=".$this->Auth->user('id')." AND from_id=users.id))
+                                AND content LIKE '%".$this->request->data['keyword']."%'
+                            ORDER BY messages.created DESC LIMIT 10 OFFSET 0";
                     
                     $messages = $this->Message->query($sql);
                 }
@@ -121,7 +126,7 @@
             }
         }
 
-        public function new(){
+        public function compose(){
             $user = new User();
             $users = $user->find('all', array(
                 'conditions' => array(

@@ -1,12 +1,14 @@
 <script>
     var url = '../messages/send';
     var redirect = '../messages/';
-    var page = 'new';
+    var page = 'compose';
 </script>
 
 <?php 
     echo $this->Html->script(array(
-        'jquery', 'sendMessage', 'select2.min'), FALSE);
+        'jquery', 
+        'sendMessage',
+        'select2.min'), FALSE);
 ?>
 
 <div id="success"></div>
@@ -32,3 +34,10 @@
     echo $this->Form->end();
 ?>
 <div id="sending" style="display: none; background-color: lightgreen">Sending...</div>
+
+
+<script>
+    $(function() {
+        $('#people').select2();
+    })
+</script>

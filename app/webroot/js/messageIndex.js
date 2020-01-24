@@ -1,7 +1,9 @@
+
 $(document).ready(function(){
     $(document).on('click', '.delete', function(e){
         e.preventDefault();
         var id = $(this).attr('value');
+        var _this = $(this);
 
         $.ajax({
             type: "POST",
@@ -11,7 +13,7 @@ $(document).ready(function(){
                 'id': id
             },
             success: function(result) {
-                $('#conversations').fadeOut();
+                _this.parent('div.container').fadeOut(); 
             },      
             error: function (response, desc, exception) {
                 alert(exception);
@@ -19,6 +21,12 @@ $(document).ready(function(){
         });
     })
 
-    $('#readMoreReadLess').readMoreReadLess();
+    // Alternative solution for now
+    $('.content').on('click', function(e){
+        $(this).css('white-space') == 'nowrap'
+        ? $(this).css({'white-space': 'normal'}) 
+        : $(this).css({'white-space': 'nowrap' })
+    })
+
 })
 

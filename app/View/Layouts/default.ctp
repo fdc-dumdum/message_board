@@ -20,12 +20,20 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <!DOCTYPE html>
 <html>
 <head>
+	<?php
+		header("Cache-Control: no-cache, no-store, must-revalidate"); 
+		header("Pragma: no-cache");
+		header("Expires: 0");
+	?>
 	<style>
-		.ellipsis {
-			width: 100%;
+		span.content {
+			display: block;
 			white-space: nowrap;
+			width: 80%%;
 			overflow: hidden;
-			text-overflow: ellipsis 
+			text-overflow: ellipsis;
+			cursor: pointer;
+			margin-left: 2.5%;
 		}
 	</style>
 

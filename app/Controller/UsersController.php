@@ -85,6 +85,24 @@
             $this->set('page', 'thankyou');
         }
 
+        public function checkPassword() {
+            if($this->request->is('ajax')){
+                $condition = array(
+                    'User.id' => $this->Auth->user('id'),
+                    'User.password' => AuthComponent::password($this->request->data['password'])
+                );
+                
+                $response = $this->User->hasAny($condition);
+
+                if($response)
+                    echo 1;
+                else
+                    echo 0;
+
+                $this->render(false);
+            }
+        }
+
         public function update() {
             if(empty($this->request->data['User']['email']) 
             || empty($this->request->data['User']['name'])
@@ -104,9 +122,9 @@
                     'User.email !=' => $this->request->data['User']['email']
                 );
 
-                $passwordChecker = array(
+                $currentPassword = array(
                     'User.id' => $this->Auth->user('id'),
-                    'User.password !=' => AuthComponent::password($this->request->data['User']['password'])
+                    'User.password' => AuthComponent::password($this->request->data['User']['password'])
                 );
                     
                 if($this->User->hasAny($changeCurrentEmail)){
@@ -121,13 +139,6 @@
                 else{
                     $email = $this->Auth->user('email');
                 }
-
-                if($this->User->hasAny($passwordChecker)){
-                    $password = $this->request->data['User']['email'];
-                }
-                // else{
-                //     $password = $this->request->data['User']['email'];
-                // }
 
                 if($this->request->data['User']['gender'] == 'M'){
                     $gender = 1;
@@ -144,6 +155,10 @@
                     $this->User->saveField('gender', $gender);
                     $this->User->saveField('birthdate', date("Y-m-d", strtotime($this->request->data['User']['birthdate'])));
                     $this->User->saveField('hubby', $this->request->data['User']['hubby']);
+
+                    if($this->User->hasAny($currentPassword)){
+                        $this->User->saveField('password', AuthComponent::password($this->request->data['User']['new-password']));
+                    }
 
                     $this->redirect(array('action' => 'profile', $this->Auth->user('id')));
                 }

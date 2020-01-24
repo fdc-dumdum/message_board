@@ -55,3 +55,8 @@ body{
   .float-right{
     text-align: right !important;
   }
+
+  .fright{
+    float: right;
+    margin-top: 10px;
+  }

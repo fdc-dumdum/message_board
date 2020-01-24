@@ -43,9 +43,11 @@
                     'accept' => '.jpg, .png, .gif'
                     ]);
                 echo $this->Form->input('email', ['value' => $detail['email']]);
-                echo $this->Form->input('Enter your password to change', array(
+                echo $this->Form->input('password', array(
                     'type' => 'password',
-                    'id' => 'password'
+                    'id' => 'password',
+                    'placeholder' => 'Enter current password and hit enter',
+                    'required' => false
                 ));
                 echo $this->Form->input('name', ['value' => $detail['name']]);
 
